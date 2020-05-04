@@ -1,0 +1,289 @@
+docker login: sai.erukulla@gmail.com
+docker id: saierukulla
+docker pass: ace@778899
+
+
+docker images----will list the images
+
+docker image purne -a ----these will remove all the unused images,which are not associated with any containers.
+
+docker inspect <imagename>---these will show all the contents inside the image
+
+docker inspect command can be used with images,container,volumes,services,stack etc.
+
+docker history imagename----it will list all the resources or layers as part of that image.
+
+docker pull imagename---pulls the image
+
+docker stats---these will show the statistics of containers like ram,cpu, memory
+
+docker run -d -P imagename----these will create the container and assign random port number to container, which can be accessed from outside.
+
+docker exec -it containername /bin/bash---these will take you to shell on the container or login to container
+
+docker system df----these command will give you complete information like how images,how many containers,local volumes and sizes of all of these.
+
+docker is a containerization software that will help us to create, manage containers with the help of images.
+image: image is nothing but a application and all its dependencies build together
+image is nothing but a set of layers, it saves as layers internally.
+ex: like if we want application, we have os,java,tomcat and warfile of application. these complete set is called image
+
+containers can be launched in 2 ways
+
+1) Detached mode---if the image is ready wth all the dependencies, ready to production deploy, where customer can access
+the application. these kind of containers are called readly available, we run these in detached mode.(ex: webservers like
+tomcat,http,nginx). as long as there is a process running inside the container, it will be in running state.
+2) Interactive mode----if the image has only some os and do not have any dependencies in the image, like jar, war, etc.
+we will launch these container in interactive mode. we can login inside the container and perform the required actions
+like installing the softwares like, java, tomcat and deploy the war file.
+to bring the container to readyly available state, where client can access the application.
+(ex:OS like ubuntu,linux these does not have any processes running inside, thats why if we run the OS by default it will
+be exited)
+
+
+docker stop cn or cid
+docker start cn or cid
+docker rm cn or cid
+docker rm -f cn or cid---these will delete the container forcefully without stopping the container.
+
+docker run -d -P imagename----if we use the capital P by default it assign the port number, which starts with
+32768 it can assign any random port for the container
+
+docker run -d -p <hostport:containerport> imagename----- if we want to use our own custom port number, we can use small p and explictly give the port
+number which we want.
+
+if we does not give option "p"----we will be not able to access the application from outside
+if we give capital P----docker will assign default port number starting with 32768
+if we give small p---we can assign our own port number like 9090:8080 (hostport:containerport)
+**hostport need to be unqiue always, we cannot assign the same port number to multiple containers
+**containerport port can be same, because internally containers uses different ipaddress
+
+***Command: command feild is nothing but what is the default or first command that gets executed when we launch the container, 
+these will change form image to image.
+
+***CMD---we can over cmd feild, if we give any argument at the end of "docker run command" that will take the presidece
+and CMD feild inside the image will be ignored at the time of container creation.(these can be security issue for containers)
+
+
+***ENTRYPOINT---entrypoint will be executed as-it-is, CMD will be used to pass the arguments to entry point.
+we cannot over ride entrypoint.
+we use entrypoint to run the commands and CMD to pass the arguments to entrypoint.
+we can give the entrypoint in dockerfile or we can use -e and give entrypoint, at the time of container creation.
+
+docker logs containerid----to see the data or logs of container
+docker logs -f containerid----to see current or live logs getting updated as part of these command.
+
+images
+======
+images can be created in 2 ways 
+
+1)manually---login into the container make the changes and commit the container
+2)docker file-----create a docker file with all the instrucations and build an image.
+
+docker commit -m "commit message" <containerid> new image----these will create the new image using the containerid
+
+***images are immutable in nature, once image is created, we cannot make any changes to that image. 
+if we want to make changes, we need to create container out it and make the changes in container and create image out of it. 
+
+docker build -t <imagenmae> -f <dockerfilename> <path of the docker file>----image creation using dockerfile
+
+tar xvzf---command to untar tar.gz file
+
+docker info----will show the information, from which registery docker is pulling the images.
+
+/opt/tomcat/apache-tomcat-8.5.54/webapps
+
+
+docker ps -aq ----these command will list all the container ids
+
+docker rm -f `docker ps -aq`-----these command is used delete all the containers in single shot(running and stopped).(we need use backtik which is at escap button)
+
+docker container prune---these command will remove stopped containers.
+
+docker volumes:y
+
+***volumes can be attached to containers in 2 ways:
+
+1)we can create volumes using volume create and attach to container(these is called docker volumes)
+
+2)we can create a folder any where and put the required files and give the path to the container at run time.(these is called bind mount)
+
+first we need to create the volumes folder locally and put the files which are required. then copy volumes to containers.
+
+docker volume create <volumename>---it will create the volume folder with the given name under local machine /var/lib/docker/volumes
+
+docker run -d -P -v skg:/tmp <imagename>---these will copy the volume skg to /tmp location inside the container.
+
+docker exec <containername> <commands>---these will be used to check the output of running container from outside.
+
+Command	Description
+docker volume create	Create a volume
+docker volume inspect	Display detailed information on one or more volumes
+docker volume ls	List volumes
+docker volume prune	Remove all unused local volumes
+docker volume rm	Remove one or more volumes
+
+docker-compose: docker compose is used to bring up multiple containers in single shot using yaml file.
+these can be used to scale up,scale down and create mulitple continers in singel shot.
+
+***the disadvantage of docker-compose is that it can scale up the containers only one machine, that is hostmachine, if host machine goes
+down, there will no backup for the containers, all the data is gone. thats why most of them are not using docker-compose, specially in
+production environment.
+
+docker-compose up --scale web=3 -d-----we will use these command only if we are using the default compose file docker-compose.yml
+
+docker-compose -f app.yml up --scale app=3 -d ----these command is used, if we write the yaml file with other names and to run in detach mode.
+
+docker-compose down----these will bring down all the containers.
+
+
+
+docker swarm:
+============
+
+by default default docker swarm will be available in docker with inactive state, we need to use docker swarm init to make it active.
+
+docker swarm init---these command will initalize the docker swarm and make that machine as manager, and generates the token
+we need to copy the token on workers machines to join manager with workers.
+
+docker node ls----these will give the list on nodes and show which are workers. by default manager node will be assigned with name as "Leader"
+
+docker swarm join-token worker---these will generate a token to add worker to manager
+
+docker swarm join-token manager---these will generate a token to add manager to manager
+
+
+replication mode :
+==================
+docker service create --name <servicename> replicas 4 -p <serviceport or hostport:containerport> image name ---these will create multiple containers using service.
+
+docker service ls---list the number of services running
+
+docker service ps <servicename>---these will list the number of containers running on different machines(nodes) 
+
+docker service scale <servicename>=6 ----these will scale up the containers to 6
+
+docker service scale <servicename>=2----these will scale down the containers from 6 to 2 (by default scale will maitain the desired state)
+
+docker service rm <serivcename>---these will remove all the containers which are created using these service
+
+docker service scale <servicename>=0----these will also remove all the containers which are created using these service.
+
+can be used to launch single application on containers, we cannot deploy mutiple software like db,websever,applcations in single shot using service.
+***service is a collection of containers, which are spanned accross the swarm nodes.
+****service is a layer which will be on top of all the containers, we will assign the service port which will internally talk to all the containers
+which is using that service. when ever user hits the service port number, it will forwards the request to the containers internally.
+
+replication mode: mainly used to run the applications.
+
+global mode:
+============
+docker service create --name guna --mode=global -p <serviceport:containerport> <imagename>-------by default these will create one container on each node
+of the swarm.
+
+usecase: we use global mode for the services like monitoring, log aggregatiors where the agent software will be running on all the machines.
+these is not useful to run the applications.
+
+stack:
+======
+
+if we want to install multiple softwares or applications on multiples containers and multiple nodes we use docker stack.
+we write a ymal with with all the instructions and execute the file.(mainly used for production application deployments)
+stack internally uses service to run.
+
+docker stack deploy -c <example.yml> <stackname>---these will create the stack based on the yaml instructions.
+
+docker stack services <stackname>---these will give the list of services running under that stack
+
+docker stack rm <stackname>----these will remove the stack and all the services related to it.
+
+docker stack ls---list the stacks
+
+docker stack ps mystack----will list the container running using these stack
+
+ip a ----these will show the network details.
+
+
+***Network for containers:
+==========================
+#containers have there own ip address, it will use the bridge network that is docker0 to allocate the ipaddress to containers.
+#if we want to access containers on localhost, we can use container ipaddress to access the host.
+#we cannot access the container from outside using container ipaddress, thats why we publish the port numbers by giving -P or -p
+to access the container from outside world.
+#by default docker uses bridge network
+# we can create our own network and launch the containers inside that.
+# if we want containers to communicate each other,then all the containers should be in same network
+# we need to create network first and attach the network to containers at the runtime
+# we can add the container running in one network to another network.(We need to stop the container first to do these)
+# we can mention the network details like which network appservers need to be in and webservers need to be in the yaml file.
+# we use different network for different services in production env to ristrict the access between containers(ex:app,web,db)
+# we can change the network subnet range in network details(ex:docker0)
+# we cannot access one container from another container using container id, to do these we need to create our own network
+# with default network docker0, if we want to access one container from another container we need to use only ipaddress, 
+we cannot access using containerid, to do these we need to create our own network.
+Network Drivers types in docker:
+
+1)bridge 2)host 3)none 4)overlay 5)macvlan
+
+docker network ls---to list the types of networks
+
+docker run -d -P --network <networkname> <imagname>----these contianer will be created under the given network
+
+docker network create <networkname>----these will create the bridge network(if we doesnt give any network type, by default it will create bridge network)
+
+docker run -d -P --network guru <imagenaem>---these container uses our own network called guru at the time of container creation.
+
+docker inspect <networkname>----these will list the network details with the subnet ranges.
+
+docker network connect <networkname> <containerid>----these command is use to change the network of one container to another network.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+what is Dockefile:
+==================
+A Dockerfile is set of instructions which are used to construct a Docker Image.
+These instructions are called directives.
+
+Dockerfiel directive:
+=====================
+
+FROM: start a new build stage and sets the base image. usually must be the first directive in the Dockerfile (except ARG can be placed before FROM).
+
+ENV: set environment variables. These can be refefenced in the Dockerfile itself and are visible to the container at runtime. 
+
+RUN: creates a new layer on top of the previous layer by running a command inside that new layer and commiting the changes.
+
+CMD: specify a default command used to run a container at execution time.
+
+EXPOSE: documents which port(s) are intended to published when running a container
+
+WORKDIR: sets the current working directory for subsequent directives such as ADD, COPY, CMD, ENTRYPOINT, etc. Can
+be used multiple time to change the directories throught the Dockerfile. you can also use relative path, 
+which sets the new working direcotry relative to the previous working direcotry.
+ 
+COPY: copy files from the local machine to the image. 
+
+ADD: similar to COPY, but can also pull files using a URL and extract an archive into loose files in the image. 
+
+STOPSIGNAL: specify the signal that will be used to stop the container. 
+
+HEALTHCHECK: speciry a command to run in order to perform a custom health check to verify that the container is working properly.
