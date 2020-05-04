@@ -1,0 +1,6 @@
+version: '3'
+services:
+  app:
+    image: tomcat
+    ports:
+      - "8080"     
