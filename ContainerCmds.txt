@@ -1,6 +1,4 @@
 
-
-
 docker images----will list the images
 
 docker image purne -a ----these will remove all the unused images,which are not associated with any containers.
