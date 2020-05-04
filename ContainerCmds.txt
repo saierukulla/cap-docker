@@ -1,6 +1,4 @@
-docker login: sai.erukulla@gmail.com
-docker id: saierukulla
-docker pass: ace@778899
+
 
 
 docker images----will list the images
